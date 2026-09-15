@@ -107,17 +107,22 @@ nav .max .bar{border-bottom:1px solid var(--line);}
 .hero p.lede{font-size:17px; line-height:1.7; color:var(--muted); max-width:540px;}
 .hero-cta{display:flex; gap:16px; margin-top:40px; flex-wrap:wrap;}
 
-/* WELCOME STATEMENT — large editorial line-by-line scroll reveal */
-.welcome-statement{padding:120px 0; display:flex; align-items:center; min-height:70vh;}
+/* WELCOME HEADING — large editorial line-by-line entrance, in the hero */
 .welcome-heading{
   font-family:'Fraunces',serif; font-weight:500; font-style:normal;
   font-size:clamp(30px, 7.5vw, 92px); line-height:1.04; letter-spacing:-0.02em;
-  color:var(--text);
+  color:var(--text); margin-bottom:32px;
 }
 .welcome-heading .w-line-mask{display:block; overflow:hidden;}
-.welcome-heading .w-line-inner{display:inline-block; will-change:transform, opacity;}
+.welcome-heading .w-line-inner{
+  display:inline-block; will-change:transform, opacity;
+  opacity:0; transform:translateY(50px);
+  animation:welcomeLineIn .85s cubic-bezier(.22,.61,.36,1) forwards;
+}
+.welcome-heading .w-line-mask:nth-child(2) .w-line-inner{animation-delay:0.18s;}
+@keyframes welcomeLineIn{ to{ opacity:1; transform:translateY(0); } }
 @media (prefers-reduced-motion: reduce){
-  .welcome-heading .w-line-inner{transform:none !important; opacity:1 !important;}
+  .welcome-heading .w-line-inner{animation:none !important; transform:none !important; opacity:1 !important;}
 }
 .btn{
   display:inline-flex; align-items:center; gap:8px; padding:15px 30px;
@@ -227,6 +232,10 @@ footer .bar{padding:28px 0;}
 <!-- HERO -->
 <header class="hero">
   <div class="max hero-inner">
+    <h1 id="welcome-heading" class="welcome-heading">
+      <span class="w-line-mask"><span class="w-line-inner">Welcome to my</span></span>
+      <span class="w-line-mask"><span class="w-line-inner">creative portfolio</span></span>
+    </h1>
     <p class="lede reveal visible">Alfred King — an engineer who runs glass-science experiments by day, and builds cross-cultural media and health platforms by night.</p>
     <div class="hero-cta reveal visible">
       <a class="btn btn-solid" href="02-work-research.html">View Portfolio</a>
@@ -234,16 +243,6 @@ footer .bar{padding:28px 0;}
     </div>
   </div>
 </header>
-
-<!-- WELCOME STATEMENT -->
-<section class="welcome-statement">
-  <div class="max">
-    <h1 id="welcome-heading" class="welcome-heading">
-      <span class="w-line-mask"><span class="w-line-inner">Welcome to my</span></span>
-      <span class="w-line-mask"><span class="w-line-inner">creative portfolio</span></span>
-    </h1>
-  </div>
-</section>
 
 <!-- ABOUT ME -->
 <section id="about">
@@ -312,62 +311,6 @@ document.addEventListener('DOMContentLoaded', () => {
     entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
   }, { threshold: 0.12 });
   document.querySelectorAll('.reveal').forEach(el => io.observe(el));
-});
-</script>
-
-<script>
-/* Scroll-scrubbed multi-line reveal for the Welcome statement (#welcome-heading).
-   Each line's reveal window is offset from the next but overlaps it, so lines
-   feel sequential without looking like a rigid one-at-a-time sequence. Progress
-   is a pure function of scroll position, so it reverses naturally on scroll up. */
-document.addEventListener('DOMContentLoaded', () => {
-  const heading = document.getElementById('welcome-heading');
-  if (!heading) return;
-  const lines = Array.from(heading.querySelectorAll('.w-line-inner'));
-  if (!lines.length) return;
-
-  const prefersReducedW = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (prefersReducedW) {
-    lines.forEach(l => { l.style.transform = 'none'; l.style.opacity = '1'; });
-    return;
-  }
-
-  const clampW = (v, min, max) => Math.max(min, Math.min(max, v));
-  const smallScreenW = window.innerWidth < 640;
-  const lineOffset = smallScreenW ? 30 : 55;
-  const n = lines.length;
-  const step = 1 / (n + 1);
-  const duration = step * 2.2;
-
-  function welcomeProgress(el, startFrac, endFrac) {
-    const rect = el.getBoundingClientRect();
-    const vh = window.innerHeight;
-    const startY = vh * startFrac;
-    const endY = vh * endFrac;
-    return clampW((startY - rect.top) / (startY - endY), 0, 1);
-  }
-
-  let tickingW = false;
-  function updateW() {
-    tickingW = false;
-    const p = welcomeProgress(heading, 0.9, 0.35);
-    lines.forEach((line, i) => {
-      const lineP = clampW((p - i * step) / duration, 0, 1);
-      line.style.transform = `translateY(${((1 - lineP) * lineOffset).toFixed(2)}px)`;
-      line.style.opacity = lineP.toFixed(3);
-    });
-  }
-
-  function onScrollW() {
-    if (!tickingW) {
-      tickingW = true;
-      requestAnimationFrame(updateW);
-    }
-  }
-
-  window.addEventListener('scroll', onScrollW, { passive: true });
-  window.addEventListener('resize', onScrollW);
-  updateW();
 });
 </script>
 
