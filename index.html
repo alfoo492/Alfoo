@@ -104,14 +104,18 @@ nav .max .bar{border-bottom:1px solid var(--line);}
 /* HERO */
 .hero{position:relative; min-height:100vh; display:flex; flex-direction:column; justify-content:center; padding-top:120px; padding-bottom:60px;}
 .hero-inner{position:relative; z-index:2;}
-.hero .kicker{font-size:12px; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); margin-bottom:28px;}
 .hero h1{
-  font-family:'Fraunces',serif; font-weight:400; font-style:italic;
-  font-size:clamp(30px,4.2vw,52px); line-height:1.05; color:var(--muted);
+  font-family:'Fraunces',serif; font-weight:500; font-style:normal;
+  font-size:clamp(26px, 9vw, 90px); line-height:1.02; letter-spacing:-0.01em;
+  color:var(--text);
+  animation:heroHeadlineLoop 4s ease-in-out infinite;
 }
 .hero h1 b{
-  display:block; font-style:normal; font-weight:500; letter-spacing:-0.01em;
-  font-size:clamp(56px,9vw,120px); color:var(--text); line-height:0.98; margin-top:6px;
+  display:inline; font-style:normal; font-weight:500; color:var(--text);
+}
+@keyframes heroHeadlineLoop{ 0%,100%{ opacity:0.86; transform:translateY(0); } 50%{ opacity:1; transform:translateY(-3px); } }
+@media (prefers-reduced-motion: reduce){
+  .hero h1{ animation:none !important; opacity:1 !important; transform:none !important; }
 }
 .hero p.lede{font-size:17px; line-height:1.7; color:var(--muted); max-width:540px; margin-top:32px;}
 .hero-cta{display:flex; gap:16px; margin-top:40px; flex-wrap:wrap;}
@@ -223,8 +227,7 @@ footer .bar{padding:28px 0;}
 <!-- HERO -->
 <header class="hero">
   <div class="max hero-inner">
-    <div class="kicker reveal visible">Biomaterials Engineering · Alfred University</div>
-    <h1 class="reveal visible">creative<b>Portfolio</b></h1>
+    <h1 class="reveal visible">creative <b>Portfolio</b></h1>
     <p class="lede reveal visible">Alfred King — an engineer who runs glass-science experiments by day, and builds cross-cultural media and health platforms by night.</p>
     <div class="hero-cta reveal visible">
       <a class="btn btn-solid" href="02-work-research.html">View Portfolio</a>
