@@ -103,26 +103,27 @@ nav .max .bar{border-bottom:1px solid var(--line);}
 
 /* HERO */
 .hero{position:relative; min-height:100vh; display:flex; flex-direction:column; justify-content:center; padding-top:120px; padding-bottom:60px;}
-.hero-inner{position:relative; z-index:2;}
-.hero p.lede{font-size:17px; line-height:1.7; color:var(--muted); max-width:540px;}
-.hero-cta{display:flex; gap:16px; margin-top:40px; flex-wrap:wrap;}
+.hero-inner{position:relative; z-index:2; text-align:center;}
+.hero p.lede{font-size:17px; line-height:1.7; color:var(--muted); max-width:540px; margin:0 auto;}
+.hero-cta{display:flex; gap:16px; margin-top:40px; flex-wrap:wrap; justify-content:center;}
 
-/* WELCOME HEADING — large editorial line-by-line entrance, in the hero */
+/* WELCOME HEADING — large editorial word-by-word entrance, in the hero */
 .welcome-heading{
   font-family:'Fraunces',serif; font-weight:500; font-style:normal;
-  font-size:clamp(30px, 7.5vw, 92px); line-height:1.04; letter-spacing:-0.02em;
+  font-size:clamp(32px, 8.5vw, 102px); line-height:1.04; letter-spacing:-0.02em;
   color:var(--text); margin-bottom:32px;
 }
-.welcome-heading .w-line-mask{display:block; overflow:hidden;}
-.welcome-heading .w-line-inner{
+.welcome-heading .w-line-mask{display:block;}
+.welcome-heading .w-word-mask{display:inline-block; overflow:hidden; vertical-align:bottom;}
+.welcome-heading .w-word-inner{
   display:inline-block; will-change:transform, opacity;
   opacity:0; transform:translateY(50px);
-  animation:welcomeLineIn .85s cubic-bezier(.22,.61,.36,1) forwards;
+  animation:welcomeLineIn .7s cubic-bezier(.22,.61,.36,1) forwards;
+  animation-delay:calc(var(--i, 0) * 90ms);
 }
-.welcome-heading .w-line-mask:nth-child(2) .w-line-inner{animation-delay:0.18s;}
 @keyframes welcomeLineIn{ to{ opacity:1; transform:translateY(0); } }
 @media (prefers-reduced-motion: reduce){
-  .welcome-heading .w-line-inner{animation:none !important; transform:none !important; opacity:1 !important;}
+  .welcome-heading .w-word-inner{animation:none !important; transform:none !important; opacity:1 !important;}
 }
 .btn{
   display:inline-flex; align-items:center; gap:8px; padding:15px 30px;
@@ -233,8 +234,8 @@ footer .bar{padding:28px 0;}
 <header class="hero">
   <div class="max hero-inner">
     <h1 id="welcome-heading" class="welcome-heading">
-      <span class="w-line-mask"><span class="w-line-inner">Welcome to my</span></span>
-      <span class="w-line-mask"><span class="w-line-inner">creative portfolio</span></span>
+      <span class="w-line-mask"><span class="w-word-mask"><span class="w-word-inner" style="--i:0">Welcome</span></span> <span class="w-word-mask"><span class="w-word-inner" style="--i:1">to</span></span> <span class="w-word-mask"><span class="w-word-inner" style="--i:2">my</span></span></span>
+      <span class="w-line-mask"><span class="w-word-mask"><span class="w-word-inner" style="--i:3">creative</span></span> <span class="w-word-mask"><span class="w-word-inner" style="--i:4">portfolio</span></span></span>
     </h1>
     <p class="lede reveal visible">Alfred King — an engineer who runs glass-science experiments by day, and builds cross-cultural media and health platforms by night.</p>
     <div class="hero-cta reveal visible">
