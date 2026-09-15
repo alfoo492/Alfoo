@@ -44,7 +44,7 @@ a{color:inherit; text-decoration:none;}
   font-size:11px; letter-spacing:0.14em; text-transform:uppercase; font-weight:600;
 }
 .nav-menu{position:relative; display:flex; align-items:center;}
-.dots-btn{background:none; border:none; padding:6px; margin:-6px; cursor:pointer; display:flex; align-items:center; gap:10px;}
+.dots-btn{background:none; border:none; padding:6px; margin:-6px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:6px;}
 .dots{display:flex; gap:7px; pointer-events:none;}
 .dots span{width:clamp(7px, 0.8vw, 9px); height:clamp(7px, 0.8vw, 9px); background:var(--text); display:block;}
 .menu-label{
@@ -209,8 +209,8 @@ footer .bar{padding:28px 0;}
       </a>
       <div class="nav-menu">
         <button class="dots-btn" type="button" aria-expanded="false" aria-controls="nav-panel" aria-label="Open menu">
-          <span class="dots"><span></span><span></span><span></span></span>
           <span class="menu-label" aria-hidden="true">Menu</span>
+          <span class="dots"><span></span><span></span><span></span></span>
         </button>
         <div class="navlinks" id="nav-panel">
           <a href="#about">About</a>
