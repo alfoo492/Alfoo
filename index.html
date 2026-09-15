@@ -142,6 +142,18 @@ section{padding:110px 0; position:relative; z-index:2;}
 
 footer{border-top:1px solid var(--line); padding:0;}
 footer .bar{padding:28px 0;}
+
+/* Scroll-scrubbed headline reveal (About section headline only) */
+#about-heading{overflow:hidden;}
+#about-heading .reveal-line{display:inline-block; will-change:transform, opacity;}
+
+/* Scroll-scrubbed character illumination (Vision/Mission headline only) */
+#vision-heading .char{display:inline-block; will-change:transform, opacity;}
+
+@media (prefers-reduced-motion: reduce){
+  #about-heading .reveal-line{transform:none !important; opacity:1 !important;}
+  #vision-heading .char{transform:none !important; opacity:1 !important;}
+}
 </style>
 </head>
 <body>
@@ -183,7 +195,7 @@ footer .bar{padding:28px 0;}
     <div class="about-grid reveal">
       <div class="about-text">
         <div class="eyebrow"><span class="sparkle"></span> About Me</div>
-        <h2 class="serif" style="font-size:clamp(30px,4vw,44px); font-weight:500; text-align:left; margin-bottom:24px;">Introduce</h2>
+        <h2 id="about-heading" class="serif" style="font-size:clamp(30px,4vw,44px); font-weight:500; text-align:left; margin-bottom:24px;">Introduce</h2>
         <p>I'm a <strong>Biomaterials Engineering</strong> student at Alfred University (minor in Communication Studies), currently running exploratory studies on Co-doped glasses in Dr. Möncke's postgrad research group — using UV-Vis spectroscopy to read how transition metals sit inside a glass network.</p>
         <p>Outside the lab, I co-founded <strong>Grace Reaches On Wheels</strong>, a public-health nonprofit tackling non-communicable disease prevention in rural Tanzania, and <strong>SERA Access</strong>, a platform centralizing university applications for students across East Africa. I also founded and host <strong>The Icons Digital Hub Africa</strong>, a podcast built to put young global voices on record.</p>
       </div>
@@ -207,7 +219,7 @@ footer .bar{padding:28px 0;}
   <div class="max">
     <div class="section-head reveal">
       <div class="eyebrow" style="justify-content:center;"><span class="sparkle"></span> Vision / Mission</div>
-      <h2>Where the science meets the story</h2>
+      <h2 id="vision-heading">Where the science meets the story</h2>
     </div>
     <div class="focus-list reveal">
       <div class="focus-item">
@@ -244,6 +256,100 @@ document.addEventListener('DOMContentLoaded', () => {
     entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
   }, { threshold: 0.12 });
   document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+});
+</script>
+
+<script>
+/* Scroll-scrubbed text animation, scoped to the About headline (#about-heading)
+   and the Vision/Mission headline (#vision-heading). Progress is derived from
+   scroll position each frame, so it scrubs forward/back with the scroll — no
+   library, matching the rest of this page's vanilla-JS approach. */
+document.addEventListener('DOMContentLoaded', () => {
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const headline = document.getElementById('about-heading');
+  const visionHeading = document.getElementById('vision-heading');
+  if (!headline && !visionHeading) return;
+
+  let headlineInner = null;
+  if (headline) {
+    headlineInner = document.createElement('span');
+    headlineInner.className = 'reveal-line';
+    headlineInner.textContent = headline.textContent;
+    headline.textContent = '';
+    headline.appendChild(headlineInner);
+  }
+
+  const visionChars = [];
+  if (visionHeading) {
+    const text = visionHeading.textContent;
+    const frag = document.createDocumentFragment();
+    for (const ch of text) {
+      if (ch === ' ') {
+        frag.appendChild(document.createTextNode(' '));
+      } else {
+        const span = document.createElement('span');
+        span.className = 'char';
+        span.textContent = ch;
+        frag.appendChild(span);
+        visionChars.push(span);
+      }
+    }
+    visionHeading.textContent = '';
+    visionHeading.appendChild(frag);
+  }
+
+  if (prefersReduced) {
+    if (headlineInner) { headlineInner.style.transform = 'none'; headlineInner.style.opacity = '1'; }
+    visionChars.forEach(c => { c.style.transform = 'none'; c.style.opacity = '1'; });
+    return;
+  }
+
+  const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+  const smallScreen = window.innerWidth < 640;
+  const headlineOffset = smallScreen ? 26 : 45;
+
+  function sectionProgress(el, startFrac, endFrac) {
+    const rect = el.getBoundingClientRect();
+    const vh = window.innerHeight;
+    const startY = vh * startFrac;
+    const endY = vh * endFrac;
+    return clamp((startY - rect.top) / (startY - endY), 0, 1);
+  }
+
+  let ticking = false;
+  function update() {
+    ticking = false;
+
+    if (headlineInner) {
+      const p = sectionProgress(headline, 0.85, 0.4);
+      headlineInner.style.transform = `translateY(${((1 - p) * headlineOffset).toFixed(2)}px)`;
+      headlineInner.style.opacity = p.toFixed(3);
+    }
+
+    if (visionChars.length) {
+      const p = sectionProgress(visionHeading, 0.85, 0.25);
+      const n = visionChars.length;
+      const windowSize = Math.max(1, Math.round(n * 0.15));
+      const head = p * (n + 2 * windowSize) - windowSize;
+      const ty = smallScreen ? 4 : 6;
+      for (let i = 0; i < n; i++) {
+        const revealed = clamp((head - i) / windowSize, 0, 1);
+        visionChars[i].style.opacity = (0.18 + revealed * 0.82).toFixed(3);
+        visionChars[i].style.transform = `translateY(${((1 - revealed) * ty).toFixed(2)}px)`;
+      }
+    }
+  }
+
+  function onScroll() {
+    if (!ticking) {
+      ticking = true;
+      requestAnimationFrame(update);
+    }
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+  update();
 });
 </script>
 
