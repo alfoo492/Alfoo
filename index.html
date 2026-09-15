@@ -187,12 +187,8 @@ footer .bar{padding:28px 0;}
 #about-heading{overflow:hidden;}
 #about-heading .reveal-line{display:inline-block; will-change:transform, opacity;}
 
-/* Scroll-scrubbed character illumination (Vision/Mission headline only) */
-#vision-heading .char{display:inline-block; will-change:transform, opacity;}
-
 @media (prefers-reduced-motion: reduce){
   #about-heading .reveal-line{transform:none !important; opacity:1 !important;}
-  #vision-heading .char{transform:none !important; opacity:1 !important;}
 }
 </style>
 </head>
@@ -267,7 +263,7 @@ footer .bar{padding:28px 0;}
   <div class="max">
     <div class="section-head reveal">
       <div class="eyebrow" style="justify-content:center;"><span class="sparkle"></span> Vision / Mission</div>
-      <h2 id="vision-heading">Where the science meets the story</h2>
+      <h2>Where the science meets the story</h2>
     </div>
     <div class="focus-list reveal">
       <div class="focus-item">
@@ -308,47 +304,24 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 
 <script>
-/* Scroll-scrubbed text animation, scoped to the About headline (#about-heading)
-   and the Vision/Mission headline (#vision-heading). Progress is derived from
-   scroll position each frame, so it scrubs forward/back with the scroll — no
-   library, matching the rest of this page's vanilla-JS approach. */
+/* Scroll-scrubbed line reveal, scoped to the About headline (#about-heading).
+   Progress is derived from scroll position each frame, so it scrubs
+   forward/back with the scroll — no library, matching the rest of this
+   page's vanilla-JS approach. */
 document.addEventListener('DOMContentLoaded', () => {
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const headline = document.getElementById('about-heading');
-  const visionHeading = document.getElementById('vision-heading');
-  if (!headline && !visionHeading) return;
+  if (!headline) return;
 
-  let headlineInner = null;
-  if (headline) {
-    headlineInner = document.createElement('span');
-    headlineInner.className = 'reveal-line';
-    headlineInner.textContent = headline.textContent;
-    headline.textContent = '';
-    headline.appendChild(headlineInner);
-  }
-
-  const visionChars = [];
-  if (visionHeading) {
-    const text = visionHeading.textContent;
-    const frag = document.createDocumentFragment();
-    for (const ch of text) {
-      if (ch === ' ') {
-        frag.appendChild(document.createTextNode(' '));
-      } else {
-        const span = document.createElement('span');
-        span.className = 'char';
-        span.textContent = ch;
-        frag.appendChild(span);
-        visionChars.push(span);
-      }
-    }
-    visionHeading.textContent = '';
-    visionHeading.appendChild(frag);
-  }
+  const headlineInner = document.createElement('span');
+  headlineInner.className = 'reveal-line';
+  headlineInner.textContent = headline.textContent;
+  headline.textContent = '';
+  headline.appendChild(headlineInner);
 
   if (prefersReduced) {
-    if (headlineInner) { headlineInner.style.transform = 'none'; headlineInner.style.opacity = '1'; }
-    visionChars.forEach(c => { c.style.transform = 'none'; c.style.opacity = '1'; });
+    headlineInner.style.transform = 'none';
+    headlineInner.style.opacity = '1';
     return;
   }
 
@@ -367,25 +340,9 @@ document.addEventListener('DOMContentLoaded', () => {
   let ticking = false;
   function update() {
     ticking = false;
-
-    if (headlineInner) {
-      const p = sectionProgress(headline, 0.85, 0.4);
-      headlineInner.style.transform = `translateY(${((1 - p) * headlineOffset).toFixed(2)}px)`;
-      headlineInner.style.opacity = p.toFixed(3);
-    }
-
-    if (visionChars.length) {
-      const p = sectionProgress(visionHeading, 0.85, 0.25);
-      const n = visionChars.length;
-      const windowSize = Math.max(1, Math.round(n * 0.15));
-      const head = p * (n + 2 * windowSize) - windowSize;
-      const ty = smallScreen ? 4 : 6;
-      for (let i = 0; i < n; i++) {
-        const revealed = clamp((head - i) / windowSize, 0, 1);
-        visionChars[i].style.opacity = (0.18 + revealed * 0.82).toFixed(3);
-        visionChars[i].style.transform = `translateY(${((1 - revealed) * ty).toFixed(2)}px)`;
-      }
-    }
+    const p = sectionProgress(headline, 0.85, 0.4);
+    headlineInner.style.transform = `translateY(${((1 - p) * headlineOffset).toFixed(2)}px)`;
+    headlineInner.style.opacity = p.toFixed(3);
   }
 
   function onScroll() {
